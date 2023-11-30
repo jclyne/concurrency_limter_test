@@ -66,6 +66,10 @@ class ConcurrencyLimitsTest : CliktCommand() {
       .named(ACTION_NAME)
       .limit(limit)
       .build<String>()
+    
+    fun log(drop:Boolean) {
+      println("Limit: ${limit.limit}, Inflight: ${limiter.inflight} Drop: ${drop}")
+    }
 
     runBlocking {
       coroutineScope {
@@ -92,8 +96,8 @@ class ConcurrencyLimitsTest : CliktCommand() {
                 listener?.let {
                   delay(rtt)
                   listener.onSuccess()
-                }
-                println("Limit: ${limit.limit}, Inflight: ${limiter.inflight}, Drop: ${listener == null}")
+                  log(false)
+                } ?: log(true)
               }
               delay(1000L / qps)
             }
